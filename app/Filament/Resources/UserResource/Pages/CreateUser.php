@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Filament\Resources\UserResource\Pages;
+
+use App\Filament\Resources\UserResource;
+use Filament\Actions;
+use Filament\Resources\Pages\CreateRecord;
+
+class CreateUser extends CreateRecord
+{
+    protected static string $resource = UserResource::class;
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            UserResource::getUrl() => 'Data Pengguna', 
+            'create' => 'Tambah User Baru',
+        ];
+    }
+
+    public function getHeading(): string
+    {
+        return 'Tambah User Baru';
+    }
+
+    protected function getFormActions(): array 
+    {
+        return [
+            $this->getCreateFormAction()
+                ->label('Simpan Data')
+                ->color('success'),
+            $this->getCreateAnotherFormAction()
+                ->label('Simpan & Tambah Lagi')
+                ->color('info'),
+            $this->getCancelFormAction()
+                ->label('Batal')
+                ->color('danger'),
+        ];
+    }
+
+}
