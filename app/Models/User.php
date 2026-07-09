@@ -108,7 +108,7 @@ class User extends Authenticatable
     {
         static::created(function ($user) {
             if ($user->roles()->count() === 0) {
-                $user->assignRole('Customer');
+                $user->assignRole('customer');
             }
         });
     }
