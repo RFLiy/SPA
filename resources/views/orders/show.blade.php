@@ -158,6 +158,16 @@
             @if(in_array($order->status, ['shipped']))
                 <form action="{{ route('orders.finish', $order->id) }}" method="POST" id="form-selesai-pesanan" class="d-inline w-100-mobile">
                     @csrf
+                    <input type="hidden" name="catatan" id="input-catatan">
+                    <button type="button" class="btn btn-warning px-5 py-2 fw-bold shadow rounded-pill w-100-mobile" id="btn-klik-selesai">
+                        Selesai Note <i class="fas fa-check-circle ms-1"></i>
+                    </button>
+                </form>
+            @endif
+
+            @if(in_array($order->status, ['shipped']))
+                <form action="{{ route('orders.finish', $order->id) }}" method="POST" id="form-selesai-pesanan" class="d-inline w-100-mobile">
+                    @csrf
                     <button type="button" class="btn btn-primary px-5 py-2 fw-bold shadow rounded-pill w-100-mobile" id="btn-klik-selesai">
                         Pesanan Selesai <i class="fas fa-check-circle ms-1"></i>
                     </button>
@@ -389,17 +399,23 @@
 @endif
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+   document.addEventListener('DOMContentLoaded', function() {
         const btnSelesai = document.getElementById('btn-klik-selesai');
         const formSelesai = document.getElementById('form-selesai-pesanan');
+        const inputCatatan = document.getElementById('input-catatan');
 
         if (btnSelesai && formSelesai) {
             btnSelesai.addEventListener('click', function(e) {
                 e.preventDefault();
                 Swal.fire({
                     title: 'Pesanan Selesai?',
-                    text: "Konfirmasi bahwa Anda telah menerima produk dengan baik.",
+                    text: "Berikan masukan atau catatan Anda mengenai layanan kami (Opsional):",
                     icon: 'question',
+                    input: 'textarea',
+                    inputPlaceholder: 'Tulis ulasan Anda di sini...',
+                    inputAttributes: {
+                        'aria-label': 'Tulis ulasan Anda di sini'
+                    },
                     showCancelButton: true,
                     confirmButtonColor: '#0d6efd',
                     confirmButtonText: 'Ya, Selesai!',
@@ -407,6 +423,7 @@
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        inputCatatan.value = result.value; 
                         formSelesai.submit();
                     }
                 });

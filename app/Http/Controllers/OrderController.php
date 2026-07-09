@@ -11,6 +11,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Midtrans\Snap;
 use Midtrans\Config;
 use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -53,6 +54,17 @@ class OrderController extends Controller
             return redirect()->back()->with('error', 'Keranjang belanja kosong.');
         }
 
+        foreach ($cartItems as $item) {
+            $product = \App\Models\Product::withoutGlobalScopes()->find($item->product_id);
+
+            if (!$product) {
+                return redirect()->route('cart.index')->with('error', "Produk {$item->product->name} tidak ditemukan.");
+            }
+
+            if ($item->quantity > $product->stock) {
+                return redirect()->route('cart.index')->with('error', "Gagal membuat order! Stok produk '{$product->name}' tidak mencukupi. Sisa stok saat ini: {$product->stock} unit.");
+            }
+        }
 
         return DB::transaction(function () use ($cartItems, $request) {
 
@@ -68,7 +80,6 @@ class OrderController extends Controller
                 'shipping_option'  => $request->shipping_type,
                 'shipping_address' => $request->shipping_address,
             ]);
-
 
             foreach ($cartItems as $item) {
                 $order->items()->create([
@@ -128,7 +139,7 @@ class OrderController extends Controller
                     'expiry' => [
                         'start_time' => date("Y-m-d H:i:s O"),
                         'unit' => 'minute',
-                        'duration' => 1
+                        'duration' => 20
                     ],
                     'customer_details' => [
                         'first_name' => $order->user->name,
@@ -279,9 +290,9 @@ class OrderController extends Controller
         return $pdf->stream("SJ-Order-{$order->order_code}.pdf");
     }
 
-    public function finish($id)
+    public function finish(Request $request, $id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('items')->findOrFail($id);
         if ($order->user_id != Auth::id()) {
             abort(403);
         }
@@ -298,6 +309,40 @@ class OrderController extends Controller
         ]);
 
         $order->user->notify(new OrderStatusNotification($order, 'completed'));
+
+        if ($request->filled('catatan')) {
+            $adminEmail = 'rafliirvansyah00@gmail.com';
+
+            $itemDetails = '<ul>';
+            foreach ($order->items as $item) {
+                $namaBarang = $item->product_name ?? ($item->product->name ?? 'Produk Tidak Tersedia');
+                $itemDetails .= '<li>' . $namaBarang . ' (x' . $item->quantity . ')</li>';
+            }
+            $itemDetails .= '</ul>';
+
+            $dataFeedback = [
+                'order_code' => $order->order_code,
+                'item_details' => $itemDetails,
+                'customer' => $order->user->name,
+                'catatan' => $request->catatan,
+            ];
+
+            \Illuminate\Support\Facades\Mail::send([], [], function ($message) use ($adminEmail, $dataFeedback) {
+                $message->to($adminEmail)
+                    ->subject("Feedback Pesanan Pelanggan Toko")
+                    ->html("
+                        <h3>Feedback Layanan Pelanggan</h3>
+                        <p><strong>No. Pesanan:</strong> #{$dataFeedback['order_code']}</p>
+                        <p><strong>Pelanggan:</strong> {$dataFeedback['customer']}</p>
+                        <p><strong>Detail Barang:</strong></p>
+                        {$dataFeedback['item_details']}
+                        <p><strong>Catatan/Rating dari User:</strong></p>
+                        <blockquote style='background: #f4f4f4; padding: 10px; border-left: 5px solid #0d6efd;'>
+                            \"{$dataFeedback['catatan']}\"
+                        </blockquote>
+                    ");
+            });
+        }
 
         return redirect()->route('orders.index')->with('success', 'Terima kasih! Pesanan dinyatakan selesai.');
     }

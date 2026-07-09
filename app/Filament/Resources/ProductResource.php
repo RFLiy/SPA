@@ -84,7 +84,8 @@ class ProductResource extends Resource
                     ->offColor('danger')
                     ->dehydrateStateUsing(fn($state) => $state ? 'active' : 'inactive')
                     ->formatStateUsing(fn($state) => $state === 'active')
-                    ->default(true),
+                    ->default(true)
+                    ->required(),
 
                 Forms\Components\Select::make('material_id')
                     ->label('Bahan Baku Utama')
@@ -110,12 +111,14 @@ class ProductResource extends Resource
                             Forms\Components\TextInput::make('unit')
                                 ->label('Satuan')
                                 ->default('pcs')
-                                ->placeholder('pcs, unit, kg, dll'),
+                                ->placeholder('pcs, unit, kg, dll')
+                                ->required(),
                         ]),
 
                 Forms\Components\RichEditor::make('description')
                     ->label('Deskripsi Produk')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->required(),
                 ])->columns(2),
 
             Forms\Components\Section::make('Media Produk')

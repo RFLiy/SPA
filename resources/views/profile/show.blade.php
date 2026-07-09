@@ -28,29 +28,29 @@
                         </div>
                     </div>
                     <div class="col-lg-8 ps-lg-5">
-                        <form action="{{ route('user-profile-information.update') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('user-profile-information.update') }}" method="POST" enctype="multipart/form-data" id="profileForm">
                             @csrf
                             @method('PUT')
                             <input type="file" id="photo" name="photo" class="d-none">
                             <div class="row">
                                 <div class="col-md-12 mb-4">
                                     <label class="small fw-bold text-muted mb-2 ms-2">Name :</label>
-                                    <input type="text" name="name" class="form-control custom-input" value="{{ old('name', Auth::user()->name) }}">
+                                    <input type="text" name="name" class="form-control custom-input" value="{{ old('name', Auth::user()->name) }}" required>
                                 </div>
                                 <div class="col-md-12 mb-4">
                                     <label class="small fw-bold text-muted mb-2 ms-2">Email :</label>
-                                    <input type="email" name="email" class="form-control custom-input" value="{{ old('email', Auth::user()->email) }}">
+                                    <input type="email" name="email" class="form-control custom-input" value="{{ old('email', Auth::user()->email) }}" required>
                                 </div>
                                 <div class="col-md-6 mb-4">
                                     <label class="small fw-bold text-muted mb-2 ms-2">No.Tlp :</label>
                                     <input type="text" name="no_tlp" class="form-control custom-input"
-                                        value="{{ old('no_tlp', Auth::user()->no_tlp) }}" placeholder="+62...">
+                                        value="{{ old('no_tlp', Auth::user()->no_tlp) }}" placeholder="+62..." required>
                                 </div>
                                 <div class="col-md-12 mb-4">
                                     <label class="small fw-bold text-muted mb-2 ms-2">Alamat :</label>
                                     <div class="position-relative">
                                         <textarea name="address" class="form-control custom-input" rows="3"
-                                                placeholder="Insert Your Address">{{ old('address', Auth::user()->address) }}</textarea>
+                                                placeholder="Insert Your Address" required>{{ old('address', Auth::user()->address) }}</textarea>
                                         <i class="fas fa-map-marker-alt show-pass-icon text-muted" style="top: 25px;"></i>
                                     </div>
                                 </div>
@@ -140,4 +140,36 @@
         .border-end-lg { border-right: 1px solid #eee; }
     }
 </style>
+
+{{-- Integrasi SweetAlert2 --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    @if(session('error') || $errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal Memperbarui Profil',
+            text: "{{ session('error') ?? 'Pastikan seluruh kolom diisi dengan benar dan tidak kosong.' }}",
+            confirmButtonColor: '#dc3545'
+        });
+    @endif
+    @if(session('success') || session('status') == 'profile-information-updated')
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: 'Data profil Anda telah diperbarui.',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    @endif
+    document.getElementById('profileForm').addEventListener('submit', function() {
+        Swal.fire({
+            title: 'Menyimpan Perubahan...',
+            text: 'Mohon tunggu sebentar.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    });
+</script>
 @endsection

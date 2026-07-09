@@ -13,7 +13,7 @@
             </a>
         </div>
     </div>
-    <form method="POST" action="{{ route('checkout.store') }}">
+    <form method="POST" action="{{ route('checkout.store') }}" id="checkoutForm">
         @csrf
         <div class="row g-4">
             <div class="col-md-6">
@@ -27,7 +27,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-muted small fw-bold text-uppercase">Alamat Lengkap Pengiriman</label>
-                            <textarea name="shipping_address"
+                            <textarea name="shipping_address" id="shippingAddress"
                                 class="form-control border shadow-none bg-white rounded-3 @error('shipping_address') is-invalid @enderror"
                                 rows="4"
                                 placeholder="Masukkan alamat lengkap (Jalan, No Rumah, Kec, Kota/Kab)" required
@@ -189,4 +189,49 @@
         }
     }
 </style>
+
+{{-- Integrasi SweetAlert2 --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    @if(session('error') || $errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal Memproses Order',
+            text: "{{ session('error') ?? 'Pastikan seluruh data dan alamat pengiriman diisi dengan benar.' }}",
+            confirmButtonColor: '#dc3545'
+        });
+    @endif
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: "{{ session('success') }}",
+            timer: 2000,
+            showConfirmButton: false
+        });
+    @endif
+    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+        const addressField = document.getElementById('shippingAddress').value.trim();
+
+        if(addressField === "") {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Alamat Kosong',
+                text: 'Silakan isi alamat pengiriman terlebih dahulu!',
+                confirmButtonColor: '#ffc107'
+            });
+            return false;
+        }
+
+        Swal.fire({
+            title: 'Memproses Pesanan...',
+            text: 'Mohon tunggu sebentar, sistem sedang membuat invoice.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    });
+</script>
 @endsection

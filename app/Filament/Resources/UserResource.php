@@ -55,17 +55,20 @@ class UserResource extends Resource
 
                 Forms\Components\TextInput::make('address')
                     ->maxLength(255)
-                    ->default(null),
+                    ->default(null)
+                    ->required(),
 
                 Forms\Components\TextInput::make('no_tlp')
                     ->maxLength(255)
-                    ->default(null),
+                    ->default(null)
+                    ->required(),
 
                 Forms\Components\Select::make('roles')
                     ->relationship('roles', 'name')
                     ->multiple()
                     ->preload()
-                    ->searchable(),
+                    ->searchable()
+                    ->required(),
             ]);
     }
 

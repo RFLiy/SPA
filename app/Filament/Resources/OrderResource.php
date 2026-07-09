@@ -13,6 +13,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
@@ -217,6 +218,7 @@ class OrderResource extends Resource
                         'completed' => 'Completed',
                         'paid' => 'Paid',
                         'shipped' => 'Shipped',
+                        'processing' => 'processing',
                         'cancelled' => 'Cancelled',
                     ])
                     ->placeholder('Semua Status'),
@@ -251,10 +253,79 @@ class OrderResource extends Resource
             //             $customer->notify(new \App\Notifications\OrderStatusNotification($record, $data['status']));
             //         }
             //     })
-                // ->successNotificationTitle('Status pesanan berhasil diperbarui & email dikirim!'),
+            // ->successNotificationTitle('Status pesanan berhasil diperbarui & email dikirim!'),
 
-                Tables\Actions\EditAction::make()
-                    ->label('Update'),
+            Tables\Actions\Action::make('updateStatus')
+                ->label('Update')
+                ->icon('heroicon-o-arrow-path')
+                ->form([
+                    Forms\Components\Select::make('status')
+                        ->label('Status Baru')
+                        ->options([
+                            'waiting_payment' => 'Waiting Payment',
+                            'paid'            => 'Paid (Sudah Bayar)',
+                            'processing'      => 'Processing (Packing)',
+                            'shipped'         => 'Shipped (In Delivery)',
+                            'delivery'        => 'Delivery',
+                            'completed'       => 'Completed (Selesai)',
+                            'cancelled'       => 'Cancelled',
+                        ])
+                        ->default(fn(Order $record) => $record->status)
+                        ->required(),
+                ])
+                ->before(function (Order $record, array $data, Tables\Actions\Action $action) {
+                    $statusWeights = [
+                        'waiting_payment' => 1,
+                        'paid'            => 2,
+                        'processing'      => 3,
+                        'shipped'         => 4,
+                        'delivery'        => 4,
+                        'completed'       => 5,
+                        'cancelled'       => 99,
+                    ];
+
+                    $currentStatus = $record->status;
+                    $newStatus = $data['status'];
+                    if (in_array($currentStatus, ['completed', 'cancelled']) && $newStatus !== $currentStatus) {
+                        Notification::make()
+                            ->title('Gagal Mengubah Status!')
+                            ->body("Pesanan yang telah '" . ucfirst($currentStatus) . "' tidak dapat diubah statusnya lagi.")
+                            ->danger()
+                            ->send();
+
+                        $action->halt();
+                    }
+                    if ($newStatus !== 'cancelled') {
+                        if ($statusWeights[$newStatus] < $statusWeights[$currentStatus]) {
+                            Notification::make()
+                                ->title('Gagal Mengubah Status!')
+                                ->body("Status tidak boleh mundur kembali ke '" . ucfirst(str_replace('_', ' ', $newStatus)) . "'.")
+                                ->danger()
+                                ->send();
+
+                            $action->halt();
+                        }
+                    }
+                })
+                ->action(function (Order $record, array $data): void {
+                    $newStatus = $data['status'];
+
+                    $record->status = $newStatus;
+                    if (in_array($newStatus, ['paid', 'processing', 'shipped', 'delivered', 'delivery', 'completed'])) {
+                        $record->payment_status = 'paid';
+                    }
+
+                    $record->save();
+                    $customer = $record->user;
+                    if ($customer) {
+                        $customer->notify(new \App\Notifications\OrderStatusNotification($record, $newStatus));
+                    }
+                    Notification::make()
+                        ->title('Status Berhasil Diperbarui')
+                        ->body("Status pesanan #{$record->order_code} kini berubah menjadi " . ucfirst($newStatus) . ".")
+                        ->success()
+                        ->send();
+                }),
 
                 Tables\Actions\ViewAction::make()
                     ->label('Detail')
@@ -272,7 +343,7 @@ class OrderResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make(),
                 ]),
                 Tables\Actions\BulkAction::make('printRekapOrder')
                     ->label('Rekap Order (PDF)')

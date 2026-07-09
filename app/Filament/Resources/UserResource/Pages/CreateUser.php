@@ -4,6 +4,7 @@ namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateUser extends CreateRecord
@@ -13,7 +14,7 @@ class CreateUser extends CreateRecord
     public function getBreadcrumbs(): array
     {
         return [
-            UserResource::getUrl() => 'Data Pengguna', 
+            UserResource::getUrl() => 'Data Pengguna',
             'create' => 'Tambah User Baru',
         ];
     }
@@ -23,7 +24,7 @@ class CreateUser extends CreateRecord
         return 'Tambah User Baru';
     }
 
-    protected function getFormActions(): array 
+    protected function getFormActions(): array
     {
         return [
             $this->getCreateFormAction()
@@ -36,6 +37,17 @@ class CreateUser extends CreateRecord
                 ->label('Batal')
                 ->color('danger'),
         ];
+    }
+
+    protected function getSavedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title('Penambahan Disimpan!')
+            ->body('Data telah berhasil diperbarui.')
+            ->icon('heroicon-o-check-circle')
+            ->color('success')
+            ->duration(5000);
     }
 
 }

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CategoryResource\Pages;
 
 use App\Filament\Resources\CategoryResource;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 
 class EditCategory extends EditRecord
@@ -32,5 +33,16 @@ class EditCategory extends EditRecord
                 ->label('Batal')
                 ->color('info'),
         ];
+    }
+
+    protected function getSavedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title('Perubahan Disimpan!')
+            ->body('Data telah berhasil diperbarui.')
+            ->icon('heroicon-o-check-circle')
+            ->color('success')
+            ->duration(5000);
     }
 }

@@ -107,7 +107,7 @@
                     <div class="d-flex justify-content-between mb-3">
                         <span class="text-muted fw-bold">Total Harga</span>
                         <span class="fw-bold text-success fs-5 total-price">
-                            Rp {{ number_format($cartItems->sum(fn($i) => $i->quantity * $i->product->base_price),0, ',', '.') }}
+                            Rp {{ number_format($cartItems->sum(fn($i) => $i->quantity * $i->product->base_price), 0, ',', '.') }}
                         </span>
                     </div>
                     <hr class="my-3 opacity-50">
@@ -272,6 +272,26 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: "{{ session('error') }}",
+            confirmButtonColor: '#dc3545'
+        });
+    @endif
+
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: "{{ session('success') }}",
+            timer: 1500,
+            showConfirmButton: false
+        });
+    @endif
+
+    // 2. Handler Konfirmasi Hapus Item
     document.querySelectorAll('.btn-remove').forEach(button => {
         button.addEventListener('click', function() {
             const form = this.closest('.delete-form');

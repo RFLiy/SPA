@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ManagerResource\Pages;
 
 use App\Filament\Resources\ManagerResource;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateManager extends CreateRecord
@@ -28,5 +29,16 @@ class CreateManager extends CreateRecord
                 ->label('Batal')
                 ->color('danger'),
         ];
+    }
+
+    protected function getSavedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title('Penambahan Disimpan!')
+            ->body('Data telah berhasil diperbarui.')
+            ->icon('heroicon-o-check-circle')
+            ->color('success')
+            ->duration(5000);
     }
 }

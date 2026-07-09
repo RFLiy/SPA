@@ -58,9 +58,12 @@ class KurirResource extends Resource
 
                     Forms\Components\TextInput::make('no_tlp')
                         ->tel()
-                        ->label('No. WhatsApp'),
+                        ->label('No. WhatsApp')
+                        ->required(),
+
                     Forms\Components\Textarea::make('address')
-                        ->label('Alamat Lengkap'),
+                        ->label('Alamat Lengkap')
+                        ->required(),
 
                     Forms\Components\Hidden::make('role')
                         ->default('customer'),

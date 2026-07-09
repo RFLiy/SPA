@@ -53,9 +53,9 @@ class CategoryResource extends Resource
                         ->default('active')
                         ->required(),
 
-                    Forms\Components\Textarea::make('description')
-                        ->label('Deskripsi Kategori')
-                        ->columnSpanFull(),
+                    // Forms\Components\Textarea::make('description')
+                    //     ->label('Deskripsi Kategori')
+                    //     ->columnSpanFull(),
                 ])->columns(2)
             ]);
     }

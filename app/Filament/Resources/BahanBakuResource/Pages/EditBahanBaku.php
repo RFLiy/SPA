@@ -4,6 +4,7 @@ namespace App\Filament\Resources\BahanBakuResource\Pages;
 
 use App\Filament\Resources\BahanBakuResource;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 
 class EditBahanBaku extends EditRecord
@@ -31,5 +32,16 @@ class EditBahanBaku extends EditRecord
                 ->label('Batal')
                 ->color('info'),
         ];
+    }
+
+    protected function getSavedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title('Perubahan Disimpan!')
+            ->body('Data telah berhasil diperbarui.')
+            ->icon('heroicon-o-check-circle')
+            ->color('success')
+            ->duration(5000);
     }
 }

@@ -200,7 +200,37 @@ class LaporanBualananResource extends Resource
                 \pxlrbt\FilamentExcel\Actions\Tables\ExportAction::make()
                     ->label('Export Excel')
                     ->color('success')
-                    ->icon('heroicon-o-document-arrow-down'),
+                    ->icon('heroicon-o-document-arrow-down')
+                    // KUNCI UTAMA: Validasi filter tanggal sebelum export dieksekusi
+                    ->before(function ($livewire, \Filament\Tables\Actions\Action $action) {
+                        // Ambil data filter aktif dari state Livewire Filament
+                        $filterData = $livewire->tableFilters['created_at'] ?? [];
+
+                        $dariTanggal = $filterData['dari_tanggal'] ?? null;
+                        $sampaiTanggal = $filterData['sampai_tanggal'] ?? null;
+
+                        // 1. Validasi: Pastikan kedua filter tanggal tidak kosong
+                        if (blank($dariTanggal) || blank($sampaiTanggal)) {
+                            Notification::make()
+                                ->title('Gagal Export Data!')
+                                ->body('Anda harus memilih filter "Dari Tanggal" dan "Sampai Tanggal" terlebih dahulu sebelum melakukan export laporan.')
+                                ->danger()
+                                ->send();
+
+                            $action->halt(); // Menggagalkan unduhan/proses export Excel secara aman
+                        }
+
+                        // 2. Validasi tambahan: Cegah jika rentang tanggal terbalik
+                        if ($sampaiTanggal < $dariTanggal) {
+                            Notification::make()
+                                ->title('Gagal Export Data!')
+                                ->body('Rentang tanggal salah! "Tanggal Akhir" tidak boleh lebih kecil dari "Tanggal Mulai".')
+                                ->danger()
+                                ->send();
+
+                            $action->halt(); // Menggagalkan unduhan/proses export Excel secara aman
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -55,12 +55,14 @@ class CustomerResource extends Resource
                         ->revealable()
                         ->maxLength(255),
 
-                    Forms\Components\TextInput::make('phone')
+                    Forms\Components\TextInput::make('no_tlp')
                         ->tel()
-                        ->label('No. WhatsApp'),
+                        ->label('No. WhatsApp')
+                        ->required(),
 
                     Forms\Components\Textarea::make('address')
-                        ->label('Alamat Lengkap'),
+                        ->label('Alamat Lengkap')
+                        ->required(),
 
                     Forms\Components\Hidden::make('role')
                         ->default('customer'),
