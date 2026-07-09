@@ -16,7 +16,7 @@ use Illuminate\Validation\Rules;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable, HasRoles;
