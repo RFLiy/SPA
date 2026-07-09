@@ -13,8 +13,7 @@ use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('welcome');
-
-Auth::routes();
+Auth::routes(['reset' => false, 'confirm' => false]);
 
 Route::get('home', [HomeController::class, 'index'])->name('home');
 
