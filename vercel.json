@@ -4,10 +4,7 @@
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@8.2",
-            "includeFiles": [
-                "public/**",
-                "vendor/filament/**"
-            ]
+            "includeFiles": "public/**"
         }
     },
     "routes": [
