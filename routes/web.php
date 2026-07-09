@@ -13,6 +13,15 @@ use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('welcome');
+
+Route::get('/debug-assets', function () {
+    $path = public_path('css/filament/filament');
+    if (!is_dir($path)) {
+        return "Folder gak ada: " . $path;
+    }
+    return response()->json(scandir($path));
+});
+
 Auth::routes(['reset' => false, 'confirm' => false]);
 
 Route::get('home', [HomeController::class, 'index'])->name('home');
