@@ -144,6 +144,7 @@ class ProductResource extends Resource
 
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Foto')
+                    ->disk('s3')
                     ->circular(),
 
                 Tables\Columns\TextColumn::make('name')
