@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('preload_lcp_image')
+@endsection
+
 @section('full_width_content')
 <main id="main-content">
     <section class="container px-3 py-lg-5" id="About">
@@ -231,9 +234,9 @@
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
                 <div class="col" data-aos="fade-up" data-aos-delay="100">
                     <div class="card h-100 border-0 shadow-sm rounded-4 p-4 review-card text-center bg-white">
-                        <div class="mb-2">
-                            <img src="{{ asset('images/client1.webp') }}" loading="lazy" alt="Foto Adam Magelang" class="rounded-circle shadow-sm border border-2 border-warning mx-auto" style="width: 60px; height: 60px; object-fit: cover;">
-                        </div>
+                            <div class="rounded-circle bg-warning text-white d-flex align-items-center justify-content-center fw-bold mx-auto shadow-sm" style="width: 55px; height: 55px; font-size: 20px;">
+                                A
+                            </div>
                         <div class="mb-2">
                             <h3 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;">Adam Magelang</h3>
                             <small class="text-muted d-block" style="font-size: 0.75rem;">Logistik Ekspres</small>
@@ -248,9 +251,9 @@
                 </div>
                 <div class="col" data-aos="fade-up" data-aos-delay="200">
                     <div class="card h-100 border-0 shadow-sm rounded-4 p-4 review-card text-center bg-white">
-                        <div class="mb-2">
-                            <img src="{{ asset('images/client2.webp') }}" loading="lazy" alt="Foto Jefry Sanca" class="rounded-circle shadow-sm border border-2 border-warning mx-auto" style="width: 60px; height: 60px; object-fit: cover;">
-                        </div>
+                            <div class="rounded-circle bg-warning text-white d-flex align-items-center justify-content-center fw-bold mx-auto shadow-sm" style="width: 55px; height: 55px; font-size: 20px;">
+                                J
+                            </div>
                         <div class="mb-2">
                             <h3 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;">Jefry Sanca</h3>
                             <small class="text-muted d-block" style="font-size: 0.75rem;">Bengkel Spesialis</small>

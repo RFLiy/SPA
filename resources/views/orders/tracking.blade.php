@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('page-css')
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+@endpush
+
 @section('content')
     @php
         $progress = 0;
