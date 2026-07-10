@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('preload_lcp_image')
+    <link rel="preload" as="image" href="{{ asset('images/logo.webp') }}" fetchpriority="high">
+    <link rel="preload" as="image" href="{{ asset('images/hero1.webp') }}" fetchpriority="high">
 @endsection
 
 @section('full_width_content')
