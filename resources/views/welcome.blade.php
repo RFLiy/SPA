@@ -68,7 +68,13 @@
             <div class="col-6 col-md-4 col-lg-3">
                 <div class="card h-100 shadow-sm product-card border-0 rounded-3">
                     <div class="product-img-container rounded-top" style="overflow: hidden;">
-                        <img src="{{ Storage::url($product->image) }}" loading="lazy" class="card-img-top w-100 h-100 object-fit-cover" alt="Produk {{ $product->name }}">
+                        @if($product->image)
+                            <img src="{{ Storage::url($product->image) }}" loading="lazy" class="card-img-top w-100 h-100 object-fit-cover" alt="Produk {{ $product->name }}">
+                        @else
+                            <div class="card-img-top w-100 h-100 bg-secondary d-flex align-items-center justify-content-center text-white">
+                                No Image
+                            </div>
+                        @endif
                     </div>
                     <div class="card-body d-flex flex-column bg-transparent p-2 p-md-3 text-start">
                         <h3 class="h6 fw-bold text-truncate mb-1" title="{{ $product->name }}">{{ $product->name }}</h3>
