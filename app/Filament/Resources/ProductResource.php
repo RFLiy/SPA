@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Category;
 use App\Models\Product;
+use App\Services\ImageConverterService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -121,16 +122,23 @@ class ProductResource extends Resource
                     ->required(),
                 ])->columns(2),
 
-            Forms\Components\Section::make('Media Produk')
-                ->schema([
-                    Forms\Components\FileUpload::make('image')
-                        ->label('Foto Produk')
-                        ->image()
-                        ->disk('s3')
-                        ->directory('products')
-                        ->imageEditor()
-                        ->required(),
-                ])
+            Forms\Components\FileUpload::make('image')
+                ->label('Foto Produk')
+                ->image()
+                ->disk('s3')
+                ->directory('products')
+                ->imageEditor()
+                ->saveUploadedFileUsing(function ($file) {
+                    $converter = app(ImageConverterService::class);
+                    $webpContent = $converter->encodeToWebp($file, maxWidth: 1000, quality: 85);
+
+                    $filename = 'products/' . Str::uuid() . '.webp';
+
+                    \Illuminate\Support\Facades\Storage::disk('s3')->put($filename, $webpContent);
+
+                    return $filename;
+                })
+                ->required(),
             ]);
     }
 
