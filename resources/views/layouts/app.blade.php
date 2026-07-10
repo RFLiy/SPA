@@ -364,15 +364,13 @@
                                 <i class="fas fa-user-circle me-1"></i> {{ Auth::user()->name }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2">
-                                {{-- Menu Profile dibuka untuk semua role agar semua user bisa edit profile --}}
                                 <li>
                                     <a class="dropdown-item" href="{{ route('profile.show') }}">
                                         <i class="fas fa-id-card me-2"></i> Profile
                                     </a>
                                 </li>
 
-                                {{-- Jika user adalah admin/owner, tampilkan tombol dashboard --}}
-                                @if(in_array(Auth::user()->role, ['super_admin', 'owner', 'manager']))
+                                @if(Auth::user()->hasAnyRole(['super_admin', 'Owner', 'Manager']))
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <a class="dropdown-item text-warning fw-bold" href="/spa/login">
