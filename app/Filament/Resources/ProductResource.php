@@ -126,6 +126,7 @@ class ProductResource extends Resource
                     Forms\Components\FileUpload::make('image')
                         ->label('Foto Produk')
                         ->image()
+                        ->disk('s3')
                         ->directory('products')
                         ->imageEditor()
                         ->required(),
