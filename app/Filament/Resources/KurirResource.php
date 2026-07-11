@@ -104,7 +104,7 @@ class KurirResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-                    ->successNotificationTitle('Produk Berhasil Dihapus!'),
+                    ->successNotificationTitle('Kurir Berhasil Dihapus!'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

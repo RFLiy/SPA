@@ -103,7 +103,7 @@ class SuperAdminResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-                    ->successNotificationTitle('Produk Berhasil Dihapus!'),
+                    ->successNotificationTitle('Super admin Berhasil Dihapus!'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

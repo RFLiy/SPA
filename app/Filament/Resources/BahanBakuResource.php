@@ -85,7 +85,7 @@ public static function form(Form $form): Form
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-                    ->successNotificationTitle('Produk Berhasil Dihapus!'),
+                    ->successNotificationTitle('Bahan baku Berhasil Dihapus!'),
                 Tables\Actions\ViewAction::make()
                     ->label('Detail')
                     ->modalHeading('Detail Kategori & Deskripsi'),

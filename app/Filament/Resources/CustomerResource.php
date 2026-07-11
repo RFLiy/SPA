@@ -103,7 +103,7 @@ class CustomerResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-                    ->successNotificationTitle('Produk Berhasil Dihapus!'),
+                    ->successNotificationTitle('Customer Berhasil Dihapus!'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
