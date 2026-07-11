@@ -39,7 +39,7 @@ class CreateUser extends CreateRecord
         ];
     }
 
-    protected function getSavedNotification(): ?Notification
+    protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
             ->success()

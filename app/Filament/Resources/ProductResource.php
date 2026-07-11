@@ -201,7 +201,8 @@ class ProductResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotificationTitle('Produk Berhasil Dihapus!'),
                 Tables\Actions\ViewAction::make()
                     ->label('Detail')
                     ->modalHeading('Detail Lengkap Produk'),

@@ -126,23 +126,25 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('exportUsers')
-                    ->label('Export PDF Rekap Akun')
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->color('info')
-                    ->action(function () {
-                        $users = \App\Models\User::all();
+                Tables\Actions\DeleteAction::make()
+                    ->successNotificationTitle('Produk Berhasil Dihapus!'),
+                // Tables\Actions\Action::make('exportUsers')
+                //     ->label('Export PDF Rekap Akun')
+                //     ->icon('heroicon-o-document-arrow-down')
+                //     ->color('info')
+                //     ->action(function () {
+                //         $users = \App\Models\User::all();
 
-                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.report-users', [
-                            'items' => $users,
-                            'title' => 'REKAP DATA AKUN PENGGUNA',
-                        ]);
+                //         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.report-users', [
+                //             'items' => $users,
+                //             'title' => 'REKAP DATA AKUN PENGGUNA',
+                //         ]);
 
-                        return response()->streamDownload(
-                            fn() => print($pdf->output()),
-                            "Laporan-User-" . now()->format('Y-m-d') . ".pdf"
-                        );
-                    }),
+                //         return response()->streamDownload(
+                //             fn() => print($pdf->output()),
+                //             "Laporan-User-" . now()->format('Y-m-d') . ".pdf"
+                //         );
+                //     }),
                 ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

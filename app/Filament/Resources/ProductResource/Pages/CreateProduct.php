@@ -31,12 +31,12 @@ class CreateProduct extends CreateRecord
         ];
     }
 
-    protected function getSavedNotification(): ?Notification
+    protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
             ->success()
-            ->title('Penambahan Disimpan!')
-            ->body('Data telah berhasil diperbarui.')
+            ->title('Produk Ditambahkan!')
+            ->body('Data produk baru berhasil disimpan.')
             ->icon('heroicon-o-check-circle')
             ->color('success')
             ->duration(5000);

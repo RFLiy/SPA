@@ -224,122 +224,81 @@ class OrderResource extends Resource
                     ->placeholder('Semua Status'),
             ])
             ->actions([
-            // Tables\Actions\Action::make('updateStatus')
-            //     ->label('Ubah Status')
-            //     ->icon('heroicon-o-arrow-path')
-            //     ->color('info')
-            //     ->form([
-            //         Forms\Components\Select::make('status')
-            //             ->label('Status Baru')
-            //             ->options([
-            //                 'waiting_payment' => 'Waiting Payment',
-            //                 'paid'            => 'Paid (Sudah Bayar)',
-            //                 'processing'      => 'Processing (Packing)',
-            //                 'shipped'         => 'Shipped (In Delivery)',
-            //                 'delivery'        => 'Delivery',
-            //                 'completed'       => 'Completed (Selesai)',
-            //                 'cancelled'       => 'Cancelled',
-            //             ])
-            //             ->required(),
-            //     ])
-            //     ->action(function (Order $record, array $data): void {
-            //         $record->status = $data['status'];
-            //         if (in_array($data['status'], ['paid', 'processing', 'shipped', 'delivered', 'delivery', 'completed'])) {
-            //             $record->payment_status = 'paid';
-            //         }
-            //         $record->save();
-            //         $customer = $record->user;
-            //         if ($customer) {
-            //             $customer->notify(new \App\Notifications\OrderStatusNotification($record, $data['status']));
-            //         }
-            //     })
-            // ->successNotificationTitle('Status pesanan berhasil diperbarui & email dikirim!'),
+                Tables\Actions\Action::make('updateStatus')
+                    ->label('Update')
+                    ->icon('heroicon-o-arrow-path')
+                    ->form([
+                        Forms\Components\Select::make('status')
+                            ->label('Status Baru')
+                            ->options([
+                                'waiting_payment' => 'Waiting Payment',
+                                'paid'            => 'Paid (Sudah Bayar)',
+                                'processing'      => 'Processing (Packing)',
+                                'shipped'         => 'Shipped (In Delivery)',
+                                'delivery'        => 'Delivery',
+                                'completed'       => 'Completed (Selesai)',
+                                'cancelled'       => 'Cancelled',
+                            ])
+                            ->default(fn(Order $record) => $record->status)
+                            ->required(),
+                    ])
+                    ->before(function (Order $record, array $data, Tables\Actions\Action $action) {
+                        $statusWeights = [
+                            'waiting_payment' => 1,
+                            'paid'            => 2,
+                            'processing'      => 3,
+                            'shipped'         => 4,
+                            'delivery'        => 4,
+                            'completed'       => 5,
+                            'cancelled'       => 99,
+                        ];
 
-            Tables\Actions\Action::make('updateStatus')
-                ->label('Update')
-                ->icon('heroicon-o-arrow-path')
-                ->form([
-                    Forms\Components\Select::make('status')
-                        ->label('Status Baru')
-                        ->options([
-                            'waiting_payment' => 'Waiting Payment',
-                            'paid'            => 'Paid (Sudah Bayar)',
-                            'processing'      => 'Processing (Packing)',
-                            'shipped'         => 'Shipped (In Delivery)',
-                            'delivery'        => 'Delivery',
-                            'completed'       => 'Completed (Selesai)',
-                            'cancelled'       => 'Cancelled',
-                        ])
-                        ->default(fn(Order $record) => $record->status)
-                        ->required(),
-                ])
-                ->before(function (Order $record, array $data, Tables\Actions\Action $action) {
-                    $statusWeights = [
-                        'waiting_payment' => 1,
-                        'paid'            => 2,
-                        'processing'      => 3,
-                        'shipped'         => 4,
-                        'delivery'        => 4,
-                        'completed'       => 5,
-                        'cancelled'       => 99,
-                    ];
-
-                    $currentStatus = $record->status;
-                    $newStatus = $data['status'];
-                    if (in_array($currentStatus, ['completed', 'cancelled']) && $newStatus !== $currentStatus) {
-                        Notification::make()
-                            ->title('Gagal Mengubah Status!')
-                            ->body("Pesanan yang telah '" . ucfirst($currentStatus) . "' tidak dapat diubah statusnya lagi.")
-                            ->danger()
-                            ->send();
-
-                        $action->halt();
-                    }
-                    if ($newStatus !== 'cancelled') {
-                        if ($statusWeights[$newStatus] < $statusWeights[$currentStatus]) {
+                        $currentStatus = $record->status;
+                        $newStatus = $data['status'];
+                        if (in_array($currentStatus, ['completed', 'cancelled']) && $newStatus !== $currentStatus) {
                             Notification::make()
                                 ->title('Gagal Mengubah Status!')
-                                ->body("Status tidak boleh mundur kembali ke '" . ucfirst(str_replace('_', ' ', $newStatus)) . "'.")
+                                ->body("Pesanan yang telah '" . ucfirst($currentStatus) . "' tidak dapat diubah statusnya lagi.")
                                 ->danger()
                                 ->send();
 
                             $action->halt();
                         }
-                    }
-                })
-                ->action(function (Order $record, array $data): void {
-                    $newStatus = $data['status'];
+                        if ($newStatus !== 'cancelled') {
+                            if ($statusWeights[$newStatus] < $statusWeights[$currentStatus]) {
+                                Notification::make()
+                                    ->title('Gagal Mengubah Status!')
+                                    ->body("Status tidak boleh mundur kembali ke '" . ucfirst(str_replace('_', ' ', $newStatus)) . "'.")
+                                    ->danger()
+                                    ->send();
 
-                    $record->status = $newStatus;
-                    if (in_array($newStatus, ['paid', 'processing', 'shipped', 'delivered', 'delivery', 'completed'])) {
-                        $record->payment_status = 'paid';
-                    }
+                                $action->halt();
+                            }
+                        }
+                    })
+                    ->action(function (Order $record, array $data): void {
+                        $newStatus = $data['status'];
 
-                    $record->save();
-                    $customer = $record->user;
-                    if ($customer) {
-                        $customer->notify(new \App\Notifications\OrderStatusNotification($record, $newStatus));
-                    }
-                    Notification::make()
-                        ->title('Status Berhasil Diperbarui')
-                        ->body("Status pesanan #{$record->order_code} kini berubah menjadi " . ucfirst($newStatus) . ".")
-                        ->success()
-                        ->send();
-                }),
+                        $record->status = $newStatus;
+                        if (in_array($newStatus, ['paid', 'processing', 'shipped', 'delivered', 'delivery', 'completed'])) {
+                            $record->payment_status = 'paid';
+                        }
+
+                        $record->save();
+                        $customer = $record->user;
+                        if ($customer) {
+                            $customer->notify(new \App\Notifications\OrderStatusNotification($record, $newStatus));
+                        }
+                        Notification::make()
+                            ->title('Status Berhasil Diperbarui')
+                            ->body("Status pesanan #{$record->order_code} kini berubah menjadi " . ucfirst($newStatus) . ".")
+                            ->success()
+                            ->send();
+                    }),
 
                 Tables\Actions\ViewAction::make()
                     ->label('Detail')
                     ->modalHeading('Detail Lengkap Produk'),
-
-                // Tables\Actions\Action::make('printSJ')
-                //     ->label('Cetak SJ')
-                //     ->icon('heroicon-o-printer')
-                //     ->color('success')
-                //     ->visible(fn($record) => $record->shipping_reference !== null)
-                //     ->action(function ($record) {
-                //         $pdf = Pdf::loadView('pdf.surat-jalan-order', ['order' => $record]);
-                //         return response()->streamDownload(fn() => print($pdf->output()), "SJ-{$record->order_code}.pdf");
-                //     }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
