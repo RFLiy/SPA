@@ -85,7 +85,19 @@ public static function form(Form $form): Form
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-                    ->successNotificationTitle('Produk Berhasil Dihapus!'),
+                    ->successNotificationTitle('Produk Berhasil Dihapus!')
+                    ->cancelAction(
+                        fn($action) => $action
+                            ->action(function () {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Dibatalkan')
+                                    ->body('Produk tidak jadi dihapus.')
+                                    ->icon('heroicon-o-x-circle')
+                                    ->color('gray')
+                                    ->duration(3000)
+                                    ->send();
+                            })
+                    ),
                 Tables\Actions\ViewAction::make()
                     ->label('Detail')
                     ->modalHeading('Detail Kategori & Deskripsi'),
