@@ -6,6 +6,7 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Exception;
 
 class ImageConverterService
@@ -23,14 +24,11 @@ class ImageConverterService
         }
     }
 
-    /**
-     * Convert file upload apapun ke WebP, return isi binary-nya
-     */
     public function encodeToWebp(UploadedFile $file, int $maxWidth = 1000, int $quality = 85): string
     {
         $path = $file->getRealPath();
 
-        \Log::info('Image upload debug', [
+        Log::info('Image upload debug', [
             'path' => $path,
             'exists' => $path ? file_exists($path) : false,
             'size' => $file->getSize(),
