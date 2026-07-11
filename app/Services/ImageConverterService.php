@@ -7,7 +7,6 @@ use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Exception;
 
 class ImageConverterService
@@ -27,24 +26,21 @@ class ImageConverterService
 
     public function encodeToWebp(UploadedFile $file, int $maxWidth = 1000, int $quality = 85): string
     {
-        // TemporaryUploadedFile dari Livewire: getRealPath() return path relatif
-        // ke disk 'local', jadi kita ambil isi filenya lewat Storage facade
-        $relativePath = $file->getRealPath();
-
-        Log::info('Image upload debug', [
-            'relativePath' => $relativePath,
-            'existsOnLocalDisk' => Storage::disk('local')->exists($relativePath),
-        ]);
-
-        if (Storage::disk('local')->exists($relativePath)) {
-            $contents = Storage::disk('local')->get($relativePath);
+        if (method_exists($file, 'readStream')) {
+            $stream = $file->readStream();
+            $contents = stream_get_contents($stream);
+            fclose($stream);
         } else {
-            // fallback: mungkin memang path absolut biasa (upload non-Livewire)
-            $contents = file_exists($relativePath) ? file_get_contents($relativePath) : null;
+            $contents = file_get_contents($file->getRealPath());
         }
 
+        Log::info('Image upload debug', [
+            'class' => get_class($file),
+            'contentLength' => $contents ? strlen($contents) : 0,
+        ]);
+
         if (!$contents) {
-            throw new Exception('Gagal membaca file upload dari path: ' . $relativePath);
+            throw new Exception('Gagal membaca isi file upload.');
         }
 
         $image = $this->manager->read($contents);
