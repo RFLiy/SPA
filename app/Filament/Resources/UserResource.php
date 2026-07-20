@@ -126,12 +126,13 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+            //  SEHARUSNYA (Tambahkan ? sebelum tipe data Model/User)
+            Tables\Actions\DeleteAction::make()
+                ->successNotificationTitle('Produk Berhasil Dihapus!')
+                ->hidden(fn(?User $record) => $record?->hasRole('admin') ?? false),
                 ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                Tables\Actions\DeleteAction::make()
-                    ->successNotificationTitle('user Berhasil Dihapus!'),
                 Tables\Actions\BulkAction::make('printRekapUser')
                     ->label('Rekap Akun Terpilih (PDF)')
                     ->icon('heroicon-o-printer')
