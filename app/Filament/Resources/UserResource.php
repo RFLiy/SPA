@@ -126,20 +126,20 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
-                    ->successNotificationTitle('Produk Berhasil Dihapus!')
-                    ->modalCancelAction(
-                        fn(\Filament\Actions\StaticAction $action) => $action
-                            ->action(function () {
-                                \Filament\Notifications\Notification::make()
-                                    ->title('Dibatalkan')
-                                    ->body('Produk tidak jadi dihapus.')
-                                    ->icon('heroicon-o-x-circle')
-                                    ->color('gray')
-                                    ->duration(3000)
-                                    ->send();
-                            })
-                    ),
+            Tables\Actions\DeleteAction::make()
+                ->successNotificationTitle('Produk Berhasil Dihapus!')
+                ->modalCancelAction(function (\Filament\Actions\StaticAction $action) {
+                    return $action
+                        ->action(function () {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Dibatalkan')
+                                ->body('Produk tidak jadi dihapus.')
+                                ->icon('heroicon-o-x-circle')
+                                ->color('gray')
+                                ->duration(3000)
+                                ->send();
+                        });
+                }),
                 ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
