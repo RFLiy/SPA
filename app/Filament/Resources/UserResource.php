@@ -126,24 +126,20 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                // Tables\Actions\Action::make('exportUsers')
-                //     ->label('Export PDF Rekap Akun')
-                //     ->icon('heroicon-o-document-arrow-down')
-                //     ->color('info')
-                //     ->action(function () {
-                //         $users = \App\Models\User::all();
-
-                //         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.report-users', [
-                //             'items' => $users,
-                //             'title' => 'REKAP DATA AKUN PENGGUNA',
-                //         ]);
-
-                //         return response()->streamDownload(
-                //             fn() => print($pdf->output()),
-                //             "Laporan-User-" . now()->format('Y-m-d') . ".pdf"
-                //         );
-                //     }),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotificationTitle('Produk Berhasil Dihapus!')
+                    ->cancelAction(
+                        fn(\Filament\Actions\StaticAction $action) => $action
+                            ->action(function () {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Dibatalkan')
+                                    ->body('Produk tidak jadi dihapus.')
+                                    ->icon('heroicon-o-x-circle')
+                                    ->color('gray')
+                                    ->duration(3000)
+                                    ->send();
+                            })
+                    ),
                 ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
