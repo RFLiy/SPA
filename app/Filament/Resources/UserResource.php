@@ -126,20 +126,7 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
-                    ->successNotificationTitle('Produk Berhasil Dihapus!')
-                    ->cancelAction(
-                        fn($action) => $action
-                            ->action(function () {
-                                \Filament\Notifications\Notification::make()
-                                    ->title('Dibatalkan')
-                                    ->body('Produk tidak jadi dihapus.')
-                                    ->icon('heroicon-o-x-circle')
-                                    ->color('gray')
-                                    ->duration(3000)
-                                    ->send();
-                            })
-                    ),
+                Tables\Actions\DeleteAction::make(),
                 // Tables\Actions\Action::make('exportUsers')
                 //     ->label('Export PDF Rekap Akun')
                 //     ->icon('heroicon-o-document-arrow-down')

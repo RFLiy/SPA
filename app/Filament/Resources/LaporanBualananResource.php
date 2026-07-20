@@ -139,8 +139,6 @@ class LaporanBualananResource extends Resource
                             ->label('Total Penjualan (Completed)')
                             ->query(fn($query) => $query->where('status', 'completed'))
                             ->formatStateUsing(fn($state) => 'Rp. ' . number_format($state, 0, ',', '.')),
-
-
                     )
                     ->sortable(),
 
