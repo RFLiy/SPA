@@ -128,7 +128,7 @@ class UserResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
                     ->successNotificationTitle('Produk Berhasil Dihapus!')
-                    ->cancelAction(
+                    ->modalCancelAction(
                         fn(\Filament\Actions\StaticAction $action) => $action
                             ->action(function () {
                                 \Filament\Notifications\Notification::make()
